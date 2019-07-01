@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <meta http-equiv="X-UA-Compatible" content="ie=edge">
+ <title>Signature</title>
+ <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+ <style>
+
+body {
+	margin: 0 auto;
+}
+
+#add-new {
+	width: 230px;
+	height: 60px;
+	position: fixed;
+	top: 0px;
+	right: 0;
+    left: 0;
+	margin-top: 30px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+#add-btn {
+	width: 160px;
+	margin: 0 auto;
+}
+
+#bg {
+	margin-top: 100px;
+}
+
+.btn {
+	margin-left: 5px;
+}
+
+#close {
+  position: relative;
+  right: -2px;
+  top: -30px;
+  width: 0px;
+  height: 12px;
+  opacity: 0.3;
+}
+#close:hover {
+  opacity: 1;
+}
+#close:before, #close:after {
+  position: absolute;
+  left: 15px;
+  content: ' ';
+  height: 18px;
+  width: 2px;
+  background-color: #333;
+}
+#close:before {
+	-webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+#close:after {
+	-webkit-transform: rotate(45deg);
+  transform: rotate(-45deg);
+}
+
+.cont {
+	position: relative;
+
+}
+
+.card-body {
+	padding: 25px !important;
+	display: inline-block !important;
+}
+
+.copied {
+	position: absolute;
+	top: 38%;
+	right: 45%;
+	visibility: hidden;
+	border-radius: .25rem;
+	border: 1px solid #6c757d;
+}
+
+.ed-submit, .ed-cancel {
+	display: none;
+}
+
+#form {
+	display: none;
+}
+
+ 
+
+#heading, #textBody, #btn, span {
+	margin-bottom: 8px;
+}
+
+span, #heading {
+	height: 50px;
+}
+
+.mb-4 {
+	margin-top: 5%;
+}
+
+.main-box {
+	margin-bottom: 8px !important;
+}
+
+
+#main-cont {
+	margin: 1em auto;
+	width: 50%;
+}
+
+
+
+
+
+</style>
+</head>
+<body>
+<div id='add-new'>
+		<button id='add-btn' class='btn btn-primary'>Add new Template</button>
+		
+</div>
+
+
+<div id="bg">
+
+	<div id='main-cont'>
+		<div id="form">
+			<div class="input-group mb-3">
+				
+				<div class="input-group-prepend">
+					<span class="input-group-text" id="heading-add">Title</span>
+				</div>
+				<input type="text" name="heading" id="heading" class="form-control" placeholder='Enter Title' aria-describedby="heading-add">
+				<a id="close"></a>
+			</div>
+					<textarea name="text-body" id="textBody" class='form-control' cols="60" rows="9" placeholder="Enter Template"></textarea>
+					<button id='btn' class='btn btn-outline-primary'>Add</button>
+		</div>
+			
+</div>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+	<script>
+
+		
+
+		//Define locDatabase
+		let database = {}
+		let locStorData = {}
+
+		//If no database in localStorage Create it
+		if (! ('templateDatabase' in localStorage) ){
+			localStorage.setItem('templateDatabase', JSON.stringify(database))
+		} else {
+			locStorData = JSON.parse(localStorage.templateDatabase)
+			for ( item in locStorData ){
+					database[item] = locStorData[item]
+			}
+
+			localStorage.setItem('templateDatabase', JSON.stringify(database))
+		}
+		//Add button to drop down the form
+		document.getElementById('add-btn').addEventListener('click', function(){
+
+			document.getElementById('form').style.display = 'block'
+			document.getElementById('close').style.display = 'inline'
+			this.style.display = 'none'
+				
+		})
+		//When push on close form closes
+		document.getElementById('close').addEventListener('click', function(){
+			document.getElementById('add-btn').style.display = 'block'
+			document.getElementById('form').style.display = 'none'
+			this.style.dispaly = 'none'	
+		})
+
+		//Add button clicked ---> Create new template from the form
+			let btn = document.getElementById('btn');
+			btn.addEventListener('click', function(){
+				
+				//adding content from the inputs to the object
+				let headingTxt = document.getElementById('heading').value;
+				let bodyText = document.getElementById('textBody').value;
+
+				database[headingTxt] = bodyText
+
+				localStorage.setItem('templateDatabase', JSON.stringify(database));
+
+
+				//removing text from both inputs
+				document.getElementById('heading').value = '';
+				document.getElementById('textBody').value = '';	
+
+				location.reload()
+	
+			})
+			
+
+			for (item in locStorData) {
+
+					//creating main-box div
+					let mainBox = document.createElement('div')
+					mainBox.setAttribute('class', 'main-box card mb-4 box-shadow')
+
+					//creating card-header div
+					let cardHeader = document.createElement('div')
+					cardHeader.setAttribute('class', 'card-header')
+
+					//creating h3 heading
+					let heading = document.createElement('h3')
+					heading.innerHTML = item
+
+					//creating textarea
+					let divCont = document.createElement("div")
+					divCont.setAttribute('class', 'cont card-body')
+
+					//taking text from localStorage
+					let storageBodyString = locStorData[item];
+					//adding replacing new line with <br> tags
+					divCont.innerHTML = storageBodyString.replace(new RegExp('\r?\n','g'), '<br />');
+
+					//create edit button
+					let editButton = document.createElement("button")
+					editButton.setAttribute('class', 'edit-text btn btn-outline-dark')
+					editButton.innerHTML = 'Edit'
+
+					//create delete button
+					let delButton = document.createElement("button")
+					delButton.setAttribute('class', "del-text btn btn-outline-danger")
+					delButton.innerHTML = 'Delete'
+
+					//create edit submit button
+					let editSubmit = document.createElement("button")
+					editSubmit.setAttribute('class', 'ed-submit btn btn-outline-success')
+					editSubmit.innerHTML = 'Submit'
+
+					//create delete button
+					let editCancel = document.createElement("button")
+					editCancel.setAttribute('class', 'ed-cancel btn btn-outline-warning')
+					editCancel.innerHTML = 'Cancel';
+
+					//create copied div
+					let copyDiv = document.createElement("div")
+					copyDiv.setAttribute('class', 'copied btn-lg')
+					copyDiv.innerHTML = 'Copied!'
+
+					//adding elements to DOM
+					mainDiv = document.getElementById('main-cont')
+					mainDiv.appendChild(mainBox);
+					mainBox.appendChild(cardHeader)
+					cardHeader.appendChild(heading)
+					mainBox.appendChild(divCont)
+					divCont.appendChild(copyDiv)
+					mainDiv.appendChild(editButton)
+					mainDiv.appendChild(delButton)
+					mainDiv.appendChild(editSubmit)
+					mainDiv.appendChild(editCancel)
+
+			}
+
+			//Each template container selector definition	
+			let obj =  document.querySelectorAll('.cont');
+
+			//add on click copy to clipboard functionality
+			obj.forEach(element => {
+				element.addEventListener('dblclick', function(){
+					
+					const selection = window.getSelection();
+					const range = document.createRange();
+					range.selectNodeContents(this);
+					selection.removeAllRanges();
+					selection.addRange(range);
+
+					try {
+						document.execCommand('copy');
+						selection.removeAllRanges();
+						copiedSelected = element.querySelector('div.card-body');
+						element.querySelector('.copied').style.visibility = 'visible';
+						this.style.cssText = "background-color:#F7F7F7;opacity: 0.8;";
+						setTimeout(function(){
+							element.querySelector('.copied').style.visibility = 'hidden';
+							element.style.cssText = 'background-color:white;color:black';
+						}, 800);
+					} catch (err) {
+						console.log(err);
+					}
+				});
+			});
+
+			let editButton = document.querySelectorAll('.edit-text')
+
+			//Edit button is pressed --> hide edit and delete button --> show Submit and Cancel Buttons
+			editButton.forEach((element) => {
+				element.addEventListener('click', function() {
+
+					delButton = this.nextElementSibling
+					editSubmit = this.nextElementSibling.nextElementSibling
+					editCancel = this.nextElementSibling.nextElementSibling.nextElementSibling
+
+
+					originalText = this.previousElementSibling.lastElementChild.innerHTML.split('<div')[0].replace(new RegExp('\r?\n','g'), '<br />');;
+					this.previousElementSibling.lastElementChild.setAttribute('contenteditable', 'true')
+
+					//if key is pressed on the div that is holding the text
+					this.previousElementSibling.lastElementChild.addEventListener('keydown', function(e){
+						//check if the key pressed in "ENTER"
+						if( e.keyCode === 13){
+
+							//changed the default behaviour and insert 2 break tags (one will be omited)
+							document.execCommand('insertHTML', false, "<br/><br/><br/>");
+
+							//prevent the default behaviour of adding div tags
+							e.preventDefault()
+							//return false on keypress again preventing the default behaviour
+							return false;
+						}
+					})
+
+						this.style.display = 'none'
+						delButton.style.display = 'none'
+						editSubmit.style.display  = 'inline'
+						editCancel.style.display  = 'inline'
+						//Cancel pressed --> reload page (no changes are in affect)
+						editCancel.addEventListener('click', function() {
+						
+						location.reload()
+
+					})
+
+
+					//Edit submit is pressed --> write changes to templateDatabase of localStorage
+					editSubmit.addEventListener('click', function (){
+						let header = this.previousElementSibling.previousElementSibling.previousElementSibling.firstChild.firstChild.innerHTML
+						let divText = this.previousElementSibling.previousElementSibling.previousElementSibling.lastChild.innerHTML.split('<div')[0].replace(new RegExp('\r?\n','g'), '<br />');
+						
+						database[header] = divText
+
+						localStorage.setItem('templateDatabase', JSON.stringify(database)
+																																						// 	 .replace(/[\n]/g, "\\n")
+																																						// // .replace(/\\'/g, "\\'")
+																																						// // .replace(/\\"/g, '\\"')
+																																						// // .replace(/\\&/g, "\\&")
+																																						// .replace(/[\r]/g, "\\r")
+																																						// // .replace(/\\t/g, "\\t")
+																																						// // .replace(/\\b/g, "\\b")
+																																						// // .replace(/\\f/g, "\\f")
+						)
+
+						location.reload()
+
+					})
+					
+				})
+			})
+
+			//Dell Button is pressed --> delete from delete from templateDatabase of localStorage
+			let delButton = document.querySelectorAll('.del-text')
+
+			delButton.forEach((element) => {
+				element.addEventListener('click', () => {
+					let header = element.previousElementSibling.previousElementSibling.firstChild.innerText
+
+					delete database[header]
+					localStorage.setItem('templateDatabase', JSON.stringify(database)
+					);
+
+					location.reload();
+				})
+			})
+			
+
+	</script>
+</body>
+</html>
